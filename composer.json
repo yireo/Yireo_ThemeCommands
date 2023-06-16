@@ -1,6 +1,7 @@
 {
   "name": "yireo/magento2-theme-commands",
   "version": "1.0.0",
+  "license": "OSL-3.0",
   "description": "CLI commands to manipulate themes",
   "type": "magento2-module",
   "require": {
