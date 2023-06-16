@@ -1,0 +1,17 @@
+{
+  "name": "yireo/module-theme-commands",
+  "version": "1.0.0",
+  "description": "CLI commands to manipulate themes",
+  "type": "magento2-module",
+  "require": {
+    "magento/framework": "*"
+  },
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Yireo\\ThemeCommands\\": ""
+    }
+  }
+}
