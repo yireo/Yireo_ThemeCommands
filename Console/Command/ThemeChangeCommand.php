@@ -4,7 +4,12 @@ namespace Yireo\ThemeCommands\Console\Command;
 
 use Magento\Framework\App\Cache\Manager as CacheManager;
 use Magento\Framework\App\ScopeResolverPool;
+use Magento\Framework\View\Design\Theme\ListInterface;
+use Magento\Indexer\Model\Indexer;
 use Magento\Indexer\Model\IndexerFactory;
+use Magento\Theme\Model\ResourceModel\Theme as ThemeResourceModel;
+use Magento\Theme\Model\ThemeFactory as ThemeModelFactory;
+use Magento\Theme\Model\Theme;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,19 +22,25 @@ class ThemeChangeCommand extends Command
     private ConfigInterface $config;
     private CacheManager $cacheManager;
     private IndexerFactory $indexerFactory;
+    private ThemeResourceModel $themeResourceModel;
+    private ThemeModelFactory $themeFactory;
 
     public function __construct(
         ScopeResolverPool $scopeResolverPool,
         ConfigInterface $config,
         CacheManager $cacheManager,
         IndexerFactory $indexerFactory,
-        string $name = null)
-    {
+        ThemeResourceModel $themeResourceModel,
+        ThemeModelFactory $themeFactory,
+        string $name = null
+    ) {
         parent::__construct($name);
         $this->scopeResolverPool = $scopeResolverPool;
         $this->config = $config;
         $this->cacheManager = $cacheManager;
         $this->indexerFactory = $indexerFactory;
+        $this->themeResourceModel = $themeResourceModel;
+        $this->themeFactory = $themeFactory;
     }
 
     /**
@@ -39,9 +50,9 @@ class ThemeChangeCommand extends Command
     {
         $this->setName('theme:change');
         $this->setDescription('Change a StoreView to use a specific theme');
-        $this->addArgument('theme_id', InputArgument::REQUIRED, 'Theme ID');
-        $this->addArgument('scope_id', InputArgument::REQUIRED, 'Scope ID');
-        $this->addArgument('scope', InputArgument::OPTIONAL, 'Scope (store, store_group, website)');
+        $this->addArgument('theme_name', InputArgument::REQUIRED, 'Theme name (example: Magento/luma');
+        $this->addArgument('scope_id', InputArgument::OPTIONAL, 'Scope ID (example: 42)');
+        $this->addArgument('scope', InputArgument::OPTIONAL, 'Scope (values: stores, websites, default)');
         parent::configure();
     }
 
@@ -55,15 +66,31 @@ class ThemeChangeCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $themeId = $input->getArgument('theme_id');
+        $themeName = trim($input->getArgument('theme_name'));
+        $themeModel = $this->themeFactory->create();
+        $this->themeResourceModel->load($themeModel, $themeName, 'theme_path');
+        $themeId = $themeModel->getId();
+
+        if (!$themeId > 0) {
+            $output->writeln('<error>Not a valid theme: ' . $themeName . '</error>');
+            return Command::FAILURE;
+        }
+
         $scopeId = $input->getArgument('scope_id');
-        $scope = 'stores';
+        $scope = $input->getArgument('scope');
+        if (empty($scope) && !empty($scopeId)) {
+            $scope = 'stores';
+        }
+
+        if (empty($scope) && empty($scopeId)) {
+            $scopeId = 0;
+            $scope = 'default';
+        }
 
         $this->config->saveConfig('design/theme/theme_id', $themeId, $scope, $scopeId);
-
         $this->cacheManager->clean(['config', 'layout', 'block_html']);
 
-        /** @var \Magento\Indexer\Model\Indexer $indexer */
+        /** @var Indexer $indexer */
         $indexer = $this->indexerFactory->create();
         $indexer->load('design_config_grid');
         $indexer->reindexAll();
