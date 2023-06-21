@@ -84,7 +84,7 @@ class ThemeChangeCommand extends Command
         $themeName = trim($input->getArgument('theme_name'));
         $themeId = $this->getThemeId($themeName);
 
-        if (!$themeId > 0) {
+        if (is_null($themeId)) {
             $output->writeln('<error>Not a valid theme: ' . $themeName . '</error>');
             return Command::FAILURE;
         }
@@ -111,8 +111,8 @@ class ThemeChangeCommand extends Command
             }
         }
 
-        if (!$scopeId > 0) {
-            $output->writeln('<error>Not a valid scopeId: ' . $scopeId . '</error>');
+        if (is_null($scopeId)) {
+            $output->writeln('<error>Not a valid scope_id</error>');
             return Command::FAILURE;
         }
 
@@ -126,24 +126,24 @@ class ThemeChangeCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function getThemeId(string $themeName): int
+    private function getThemeId(string $themeName): ?int
     {
         $themeModel = $this->themeFactory->create();
         $this->themeResourceModel->load($themeModel, $themeName, 'theme_path');
-        return (int)$themeModel->getId();
+        return $themeModel->getId() ? (int)$themeModel->getId() : null;
     }
 
-    private function getWebsiteId(string $scopeId): int
+    private function getWebsiteId(string $scopeId): ?int
     {
         $websiteModel = $this->websiteFactory->create();
         $this->websiteResourceModel->load($websiteModel, $scopeId, 'code');
-        return (int)$websiteModel->getId();
+        return $websiteModel->getId() ? (int)$websiteModel->getId() : null;
     }
 
-    private function getStoreId(string $scopeId): int
+    private function getStoreId(string $scopeId): ?int
     {
         $storeModel = $this->storeFactory->create();
         $this->storeResourceModel->load($storeModel, $scopeId, 'code');
-        return (int)$storeModel->getId();
+        return $storeModel->getId() ? (int)$storeModel->getId() : null;
     }
 }
