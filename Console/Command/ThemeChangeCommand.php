@@ -122,6 +122,7 @@ class ThemeChangeCommand extends Command
         $indexer = $this->indexerFactory->create();
         $indexer->load('design_config_grid');
         $indexer->reindexAll();
+        $indexer->reindexAll();
 
         return Command::SUCCESS;
     }

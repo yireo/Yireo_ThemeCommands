@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 30 August 2023
+### Fixed
+- Fix issue with grid not being updated for global scope
+
 ## [1.0.2] - 20 June 2023
 ### Fixed
 - Fix scope_id validation when using default scope #2 @lbanka
