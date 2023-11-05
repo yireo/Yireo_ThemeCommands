@@ -7,6 +7,9 @@
                 <item name="yireo_themecommands_theme_change_command" xsi:type="object">
                     Yireo\ThemeCommands\Console\Command\ThemeChangeCommand
                 </item>
+                <item name="yireo_themecommands_theme_list_command" xsi:type="object">
+                    Yireo\ThemeCommands\Console\Command\ThemeListCommand
+                </item>
             </argument>
         </arguments>
     </type>

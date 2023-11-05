@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 5 November 2023
+### Added
+- New command to list all themes
+
+### Fixed
+- Cleanup deps in change command
+
 ## [1.0.3] - 30 August 2023
 ### Fixed
 - Fix issue with grid not being updated for global scope
