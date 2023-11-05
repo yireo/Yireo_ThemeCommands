@@ -1,6 +1,6 @@
 # Yireo_ThemeCommands module
 
-CLI commands to manage themes from the command-line (work in progress)
+**Magento 2 module to add CLI commands to manage themes from the command-line**
 
 ## Installation
 ```bash
@@ -9,6 +9,11 @@ bin/magento module:enable Yireo_ThemeCommands
 ```
 
 ## Usage
+List all themes:
+```bash
+bin/magento theme:list
+```
+
 Change the current theme to `Magento/luma` for all scopes:
 ```bash
 bin/magento theme:change Magento/luma
