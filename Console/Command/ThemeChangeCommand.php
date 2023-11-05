@@ -3,7 +3,6 @@
 namespace Yireo\ThemeCommands\Console\Command;
 
 use Magento\Framework\App\Cache\Manager as CacheManager;
-use Magento\Framework\App\ScopeResolverPool;
 use Magento\Indexer\Model\IndexerFactory;
 use Magento\Store\Model\ResourceModel\Store as StoreResourceModel;
 use Magento\Store\Model\StoreFactory as StoreModelFactory;
@@ -20,7 +19,6 @@ use Throwable;
 
 class ThemeChangeCommand extends Command
 {
-    private ScopeResolverPool $scopeResolverPool;
     private ConfigInterface $config;
     private CacheManager $cacheManager;
     private IndexerFactory $indexerFactory;
@@ -32,7 +30,6 @@ class ThemeChangeCommand extends Command
     private StoreModelFactory $storeFactory;
 
     public function __construct(
-        ScopeResolverPool $scopeResolverPool,
         ConfigInterface $config,
         CacheManager $cacheManager,
         IndexerFactory $indexerFactory,
@@ -45,7 +42,6 @@ class ThemeChangeCommand extends Command
         string $name = null
     ) {
         parent::__construct($name);
-        $this->scopeResolverPool = $scopeResolverPool;
         $this->config = $config;
         $this->cacheManager = $cacheManager;
         $this->indexerFactory = $indexerFactory;
