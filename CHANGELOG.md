@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 3 February 2024
+### Added
+- New command to create a new theme
+
 ## [1.1.0] - 5 November 2023
 ### Added
 - New command to list all themes

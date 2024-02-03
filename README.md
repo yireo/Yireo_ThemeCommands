@@ -23,3 +23,9 @@ Change the current theme to `Hyva/default` for the StoreView with ID 1:
 ```bash
 bin/magento theme:change Hyva/default 1 stores
 ```
+
+Create a new theme:
+```bash
+bin/magento theme:create --theme Yireo/example --parent Magento/luma --application frontend
+bin/magento theme:change Yireo/example
+```

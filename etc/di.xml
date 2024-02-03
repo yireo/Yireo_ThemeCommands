@@ -4,12 +4,9 @@
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="yireo_themecommands_theme_change_command" xsi:type="object">
-                    Yireo\ThemeCommands\Console\Command\ThemeChangeCommand
-                </item>
-                <item name="yireo_themecommands_theme_list_command" xsi:type="object">
-                    Yireo\ThemeCommands\Console\Command\ThemeListCommand
-                </item>
+                <item name="yireo_themecommands_theme_change_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemeChangeCommand</item>
+                <item name="yireo_themecommands_theme_create_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemeCreateCommand</item>
+                <item name="yireo_themecommands_theme_list_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemeListCommand</item>
             </argument>
         </arguments>
     </type>
