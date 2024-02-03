@@ -15,13 +15,20 @@ use Throwable;
 
 class ThemeCreateCommand extends Command
 {
+    private DirectoryList $directoryList;
+    private ComponentRegistrar $componentRegistrar;
+    private string $themeSkeletonFolder;
+    
     public function __construct(
-        private DirectoryList $directoryList,
-        private ComponentRegistrar $componentRegistrar,
-        private string $themeSkeletonFolder = '',
+        DirectoryList $directoryList,
+        ComponentRegistrar $componentRegistrar,
+        string $themeSkeletonFolder = '',
         string $name = null
     ) {
         parent::__construct($name);
+        $this->directoryList = $directoryList;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->themeSkeletonFolder = $themeSkeletonFolder;
     }
     
     /**
