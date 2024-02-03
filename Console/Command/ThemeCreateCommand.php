@@ -7,6 +7,7 @@ namespace Yireo\ThemeCommands\Console\Command;
 use Composer\Console\Input\InputOption;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Framework\Shell;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,11 +18,14 @@ class ThemeCreateCommand extends Command
 {
     private DirectoryList $directoryList;
     private ComponentRegistrar $componentRegistrar;
+    private Shell $shell;
+    
     private string $themeSkeletonFolder;
     
     public function __construct(
         DirectoryList $directoryList,
         ComponentRegistrar $componentRegistrar,
+        Shell $shell,
         string $themeSkeletonFolder = '',
         string $name = null
     ) {
@@ -29,6 +33,7 @@ class ThemeCreateCommand extends Command
         $this->directoryList = $directoryList;
         $this->componentRegistrar = $componentRegistrar;
         $this->themeSkeletonFolder = $themeSkeletonFolder;
+        $this->shell = $shell;
     }
     
     /**
@@ -61,7 +66,7 @@ class ThemeCreateCommand extends Command
         $application = trim($input->getOption('application'));
         
         $themeFolder = $this->getThemeFolder($themeName, $application);
-        exec('mkdir -p '.$themeFolder);
+        $this->shell->execute('mkdir -p '.$themeFolder);
         
         $this->generateRegistrationFile($themeFolder, $application . '/' . $themeName);
         $this->generateThemeXmlFile($themeFolder, $themeName, $parentThemeName);
