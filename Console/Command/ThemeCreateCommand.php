@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yireo\ThemeCommands\Console\Command;
 
-use Composer\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputOption;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;
