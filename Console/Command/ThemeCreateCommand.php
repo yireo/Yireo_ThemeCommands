@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace Yireo\ThemeCommands\Console\Command;
 
+use Magento\Framework\Shell;
 use Symfony\Component\Console\Input\InputOption;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Filesystem\DirectoryList;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
-
 class ThemeCreateCommand extends Command
 {
     public function __construct(
         private DirectoryList $directoryList,
         private ComponentRegistrar $componentRegistrar,
+        private Shell $shell,
         private string $themeSkeletonFolder = '',
         string $name = null
     ) {
         parent::__construct($name);
     }
-    
+
     /**
      * Initialization of the command.
      */
@@ -37,7 +37,7 @@ class ThemeCreateCommand extends Command
         $this->addOption('application', null, InputOption::VALUE_OPTIONAL, 'Application');
         parent::configure();
     }
-    
+
     /**
      * CLI command description.
      *
@@ -52,15 +52,15 @@ class ThemeCreateCommand extends Command
         $themeName = trim($input->getOption('theme'));
         $parentThemeName = trim($input->getOption('parent'));
         $application = trim($input->getOption('application'));
-        
+
         $themeFolder = $this->getThemeFolder($themeName, $application);
-        exec('mkdir -p '.$themeFolder);
-        
+        $this->shell->execute('mkdir -p '.$themeFolder);
+
         $this->generateRegistrationFile($themeFolder, $application . '/' . $themeName);
         $this->generateThemeXmlFile($themeFolder, $themeName, $parentThemeName);
         return Command::SUCCESS;
     }
-    
+
     /**
      * @param string $themeFolder
      * @param string $componentName
@@ -73,7 +73,7 @@ class ThemeCreateCommand extends Command
         $contents = str_replace('{{ COMPONENT_NAME }}', $componentName, $contents);
         file_put_contents($themeFolder . '/registration.php', $contents);
     }
-    
+
     /**
      * @param string $themeFolder
      * @param string $componentName
@@ -87,7 +87,7 @@ class ThemeCreateCommand extends Command
         $contents = str_replace('{{ PARENT_THEME_NAME }}', $parentThemeName, $contents);
         file_put_contents($themeFolder . '/theme.xml', $contents);
     }
-    
+
     /**
      * @param string $themeName
      * @param string $application
@@ -98,10 +98,10 @@ class ThemeCreateCommand extends Command
         if (empty($application)) {
             $application = 'frontend';
         }
-        
+
         return $this->directoryList->getRoot() . '/app/design/' . $application . '/' . $themeName;
     }
-    
+
     /**
      * @return string
      */
@@ -112,12 +112,12 @@ class ThemeCreateCommand extends Command
         if (empty($this->themeSkeletonFolder)) {
             return $defaultThemeSkeletonFolder;
         }
-        
+
         $themeSkeletonFolder = $this->directoryList->getRoot() . '/' . $this->themeSkeletonFolder;
         if (!is_dir($this->themeSkeletonFolder)) {
             return $defaultThemeSkeletonFolder;
         }
-        
+
         return $themeSkeletonFolder;
     }
 }
