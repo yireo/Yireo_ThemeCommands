@@ -13,33 +13,17 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+
 class ThemeCreateCommand extends Command
 {
-    private DirectoryList $directoryList;
-    private ComponentRegistrar $componentRegistrar;
-    private Shell $shell;
-    
-    private string $themeSkeletonFolder;
-    
     public function __construct(
-<<<<<<< HEAD
-        DirectoryList $directoryList,
-        ComponentRegistrar $componentRegistrar,
-        Shell $shell,
-        string $themeSkeletonFolder = '',
-=======
         private DirectoryList $directoryList,
         private ComponentRegistrar $componentRegistrar,
         private Shell $shell,
         private string $themeSkeletonFolder = '',
->>>>>>> 9ef8254c1b70701f2f1edcc4682f914e2f6cabe8
         string $name = null
     ) {
         parent::__construct($name);
-        $this->directoryList = $directoryList;
-        $this->componentRegistrar = $componentRegistrar;
-        $this->themeSkeletonFolder = $themeSkeletonFolder;
-        $this->shell = $shell;
     }
 
     /**
@@ -73,11 +57,7 @@ class ThemeCreateCommand extends Command
 
         $themeFolder = $this->getThemeFolder($themeName, $application);
         $this->shell->execute('mkdir -p '.$themeFolder);
-<<<<<<< HEAD
         
-=======
-
->>>>>>> 9ef8254c1b70701f2f1edcc4682f914e2f6cabe8
         $this->generateRegistrationFile($themeFolder, $application . '/' . $themeName);
         $this->generateThemeXmlFile($themeFolder, $themeName, $parentThemeName);
         return Command::SUCCESS;
