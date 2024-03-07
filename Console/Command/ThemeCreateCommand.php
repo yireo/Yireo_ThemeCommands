@@ -8,7 +8,6 @@ use Magento\Framework\Shell;
 use Symfony\Component\Console\Input\InputOption;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Filesystem\DirectoryList;
-use Magento\Framework\Shell;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -57,7 +56,7 @@ class ThemeCreateCommand extends Command
 
         $themeFolder = $this->getThemeFolder($themeName, $application);
         $this->shell->execute('mkdir -p '.$themeFolder);
-        
+
         $this->generateRegistrationFile($themeFolder, $application . '/' . $themeName);
         $this->generateThemeXmlFile($themeFolder, $themeName, $parentThemeName);
         return Command::SUCCESS;
