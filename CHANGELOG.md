@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 1 July 2024
+### Added
+- Add `--reset` flag to `theme:change` command
+- Add new command `theme:design_config`
+
 ## [1.2.1] - 6 February 2024
 ### Fixed
 - namespace correction for InputOption #3 @meminuygur
