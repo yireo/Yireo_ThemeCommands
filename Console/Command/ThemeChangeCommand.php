@@ -3,6 +3,7 @@
 namespace Yireo\ThemeCommands\Console\Command;
 
 use Magento\Framework\App\Cache\Manager as CacheManager;
+use Magento\Framework\App\ResourceConnection;
 use Magento\Indexer\Model\IndexerFactory;
 use Magento\Store\Model\ResourceModel\Store as StoreResourceModel;
 use Magento\Store\Model\StoreFactory as StoreModelFactory;
@@ -13,6 +14,7 @@ use Magento\Theme\Model\ThemeFactory as ThemeModelFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 use Throwable;
@@ -28,6 +30,7 @@ class ThemeChangeCommand extends Command
     private WebsiteModelFactory $websiteFactory;
     private StoreResourceModel $storeResourceModel;
     private StoreModelFactory $storeFactory;
+    private ResourceConnection $resourceConnection;
 
     public function __construct(
         ConfigInterface $config,
@@ -39,6 +42,7 @@ class ThemeChangeCommand extends Command
         WebsiteModelFactory $websiteFactory,
         StoreResourceModel $storeResourceModel,
         StoreModelFactory $storeFactory,
+        ResourceConnection $resourceConnection,
         string $name = null
     ) {
         parent::__construct($name);
@@ -51,6 +55,7 @@ class ThemeChangeCommand extends Command
         $this->websiteFactory = $websiteFactory;
         $this->storeResourceModel = $storeResourceModel;
         $this->storeFactory = $storeFactory;
+        $this->resourceConnection = $resourceConnection;
     }
 
     /**
@@ -61,8 +66,9 @@ class ThemeChangeCommand extends Command
         $this->setName('theme:change');
         $this->setDescription('Change a StoreView to use a specific theme');
         $this->addArgument('theme_name', InputArgument::REQUIRED, 'Theme name (example: Magento/luma');
-        $this->addArgument('scope_id', InputArgument::OPTIONAL, 'Scope ID (example: 42)');
         $this->addArgument('scope', InputArgument::OPTIONAL, 'Scope (values: stores, websites, default)');
+        $this->addArgument('scope_id', InputArgument::OPTIONAL, 'Scope ID (example: 42)');
+        $this->addOption('reset', null, InputOption::VALUE_OPTIONAL, 'Reset all themes', false);
         parent::configure();
     }
 
@@ -77,6 +83,8 @@ class ThemeChangeCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $reset = $input->getOption('reset') !== false;
+
         $themeName = trim($input->getArgument('theme_name'));
         $themeId = $this->getThemeId($themeName);
 
@@ -104,6 +112,8 @@ class ThemeChangeCommand extends Command
                 case 'stores':
                     $scopeId = $this->getStoreId($scopeId);
                     break;
+                default:
+                    $scopeId = 0;
             }
         }
 
@@ -112,7 +122,22 @@ class ThemeChangeCommand extends Command
             return Command::FAILURE;
         }
 
+        if (!in_array($scope, ['default', 'website', 'stores'])) {
+            $output->writeln('<error>Not a valid scope. Can only be: default, website, stores</error>');
+            return Command::FAILURE;
+        }
+
+        $output->writeln('Saving '.$themeId.' for scope '.$scope.' '.$scopeId);
         $this->config->saveConfig('design/theme/theme_id', $themeId, $scope, $scopeId);
+
+        if ($scope === 'default' && $reset === true) {
+            $connection = $this->resourceConnection->getConnection();
+            $table = $this->resourceConnection->getTableName('core_config_data');
+            $query = 'DELETE FROM `'.$table.'`';
+            $query .= ' WHERE `path` = "design/theme/theme_id" AND `scope` != "default"';
+            $connection->query($query);
+        }
+
         $this->cacheManager->clean(['config', 'layout', 'block_html']);
 
         $indexer = $this->indexerFactory->create();
