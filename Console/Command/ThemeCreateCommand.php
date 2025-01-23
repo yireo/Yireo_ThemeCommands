@@ -50,9 +50,22 @@ class ThemeCreateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $themeName = trim($input->getOption('theme'));
-        $parentThemeName = trim($input->getOption('parent'));
-        $application = trim($input->getOption('application'));
+        $themeName = trim((string)$input->getOption('theme'));
+        $parentThemeName = trim((string)$input->getOption('parent'));
+        $application = trim((string)$input->getOption('application'));
+
+        if (empty($application)) {
+            $application = 'frontend';
+        }
+
+        if (empty($parentThemeName)) {
+            $parentThemeName = 'Magento/luma';
+        }
+
+        if (false === preg_match('/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/', $themeName)) {
+            $output->writeln('Wrong theme name: '.$themeName);
+            return Command::FAILURE;
+        }
 
         $themeFolder = $this->getThemeFolder($themeName, $application);
         $this->shell->execute('mkdir -p '.$themeFolder);
