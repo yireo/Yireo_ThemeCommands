@@ -5,7 +5,7 @@
   "description": "CLI commands to manipulate themes",
   "type": "magento2-module",
   "require": {
-    "magento/framework": "*"
+    "magento/framework": "^103.0"
   },
   "autoload": {
     "files": [
