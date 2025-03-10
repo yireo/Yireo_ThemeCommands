@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 10 March 2025
+### Fix
+- Wrong regex when creating theme
+
 ## [1.3.0] - 1 July 2024
 ### Added
 - Add `--reset` flag to `theme:change` command
