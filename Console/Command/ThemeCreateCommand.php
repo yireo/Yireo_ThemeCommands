@@ -62,7 +62,7 @@ class ThemeCreateCommand extends Command
             $parentThemeName = 'Magento/luma';
         }
 
-        if (false === preg_match('/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/', $themeName)) {
+        if (!preg_match('/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/', $themeName)) {
             $output->writeln('Wrong theme name: '.$themeName);
             return Command::FAILURE;
         }
