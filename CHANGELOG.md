@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 23 April 2025
+### Fixed
+- Fix PHP 8.4 deprecation
+
 ## [1.3.1] - 10 March 2025
 ### Fix
 - Wrong regex when creating theme
