@@ -17,7 +17,7 @@ class ThemeListCommand extends Command
 
     public function __construct(
         ThemeCollectionFactory $themeCollectionFactory,
-        string $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
         $this->themeCollectionFactory = $themeCollectionFactory;

@@ -20,7 +20,7 @@ class ThemeCreateCommand extends Command
         private ComponentRegistrar $componentRegistrar,
         private Shell $shell,
         private string $themeSkeletonFolder = '',
-        string $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
     }

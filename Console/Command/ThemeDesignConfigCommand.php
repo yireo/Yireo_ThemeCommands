@@ -22,7 +22,7 @@ class ThemeDesignConfigCommand extends Command
         private StoreRepository $storeRepository,
         private ThemeProvider $themeProvider,
         private ResourceConnection $resourceConnection,
-        string $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
     }

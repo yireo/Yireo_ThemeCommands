@@ -43,7 +43,7 @@ class ThemeChangeCommand extends Command
         StoreResourceModel $storeResourceModel,
         StoreModelFactory $storeFactory,
         ResourceConnection $resourceConnection,
-        string $name = null
+        ?string $name = null
     ) {
         parent::__construct($name);
         $this->config = $config;
@@ -89,7 +89,8 @@ class ThemeChangeCommand extends Command
         $themeId = $this->getThemeId($themeName);
 
         if (is_null($themeId)) {
-            $output->writeln('<error>Not a valid theme: ' . $themeName . '</error>');
+            $output->writeln('<error>Not a valid theme: '.$themeName.'</error>');
+
             return Command::FAILURE;
         }
 
@@ -119,11 +120,13 @@ class ThemeChangeCommand extends Command
 
         if (is_null($scopeId)) {
             $output->writeln('<error>Not a valid scope_id</error>');
+
             return Command::FAILURE;
         }
 
         if (!in_array($scope, ['default', 'website', 'stores'])) {
             $output->writeln('<error>Not a valid scope. Can only be: default, website, stores</error>');
+
             return Command::FAILURE;
         }
 
@@ -152,6 +155,7 @@ class ThemeChangeCommand extends Command
     {
         $themeModel = $this->themeFactory->create();
         $this->themeResourceModel->load($themeModel, $themeName, 'theme_path');
+
         return $themeModel->getId() ? (int)$themeModel->getId() : null;
     }
 
@@ -159,6 +163,7 @@ class ThemeChangeCommand extends Command
     {
         $websiteModel = $this->websiteFactory->create();
         $this->websiteResourceModel->load($websiteModel, $scopeId, 'code');
+
         return $websiteModel->getId() ? (int)$websiteModel->getId() : null;
     }
 
@@ -166,6 +171,7 @@ class ThemeChangeCommand extends Command
     {
         $storeModel = $this->storeFactory->create();
         $this->storeResourceModel->load($storeModel, $scopeId, 'code');
+
         return $storeModel->getId() ? (int)$storeModel->getId() : null;
     }
 }
