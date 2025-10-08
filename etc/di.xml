@@ -6,6 +6,7 @@
             <argument name="commands" xsi:type="array">
                 <item name="yireo_themecommands_theme_change_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemeChangeCommand</item>
                 <item name="yireo_themecommands_theme_create_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemeCreateCommand</item>
+                <item name="yireo_themecommands_theme_path_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemePathCommand</item>
                 <item name="yireo_themecommands_theme_list_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemeListCommand</item>
                 <item name="yireo_themecommands_theme_design_config_command" xsi:type="object">Yireo\ThemeCommands\Console\Command\ThemeDesignConfigCommand</item>
             </argument>
