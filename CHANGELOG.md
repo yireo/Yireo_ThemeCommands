@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.4] - 22 October 2025
+### Fixed
+- Wrong imported namespace of Composer, should be Symfony Console
+
 ## [1.3.3] - 08 October 2025
 ### Fixed
 - Add new command "theme:path" to return full path for given theme
