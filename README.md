@@ -41,3 +41,6 @@ Create a new theme:
 bin/magento theme:create --theme Yireo/example --parent Magento/luma --application frontend
 bin/magento theme:change Yireo/example
 ```
+
+## Caveats
+When a new theme has been created, it might have not been *discovered* by Magento. For instance, the output of the `theme:list` command is not showing this new theme. Run `bin/magento setup:upgrade` first.
