@@ -2,6 +2,10 @@
 
 namespace Yireo\ThemeCommands\Console\Command;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\View\DesignInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Theme\Model\ResourceModel\Theme as ThemeResourceModel;
 use Magento\Theme\Model\ResourceModel\Theme\Collection as ThemeCollection;
 use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory as ThemeCollectionFactory;
@@ -13,14 +17,13 @@ use Throwable;
 
 class ThemeListCommand extends Command
 {
-    private ThemeResourceModel\CollectionFactory $themeCollectionFactory;
-
     public function __construct(
-        ThemeCollectionFactory $themeCollectionFactory,
+        private readonly ThemeCollectionFactory $themeCollectionFactory,
+        private readonly ScopeConfigInterface $scopeConfig,
+        private readonly StoreManagerInterface $storeManager,
         ?string $name = null
     ) {
         parent::__construct($name);
-        $this->themeCollectionFactory = $themeCollectionFactory;
     }
 
     /**
@@ -45,7 +48,7 @@ class ThemeListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $table = new Table($output);
-        $table->setHeaders(['ID', 'Theme', 'Path', 'Area']);
+        $table->setHeaders(['ID', 'Theme', 'Path', 'Area', 'Active']);
 
         /** @var ThemeCollection $themeCollection */
         $themeCollection = $this->themeCollectionFactory->create();
@@ -55,11 +58,29 @@ class ThemeListCommand extends Command
                 $theme->getThemeTitle(),
                 $theme->getThemePath(),
                 $theme->getArea(),
+                $this->isActive((int)$theme->getId()) ? 'Yes' : 'No'
             ]);
         }
 
         $table->render();
 
         return Command::SUCCESS;
+    }
+
+    private function isActive(int $themeId): bool
+    {
+        foreach ($this->storeManager->getStores() as $store) {
+            $storeThemeId = $this->scopeConfig->getValue(
+                DesignInterface::XML_PATH_THEME_ID,
+                ScopeInterface::SCOPE_STORE,
+                $store->getCode(),
+            );
+
+            if ($themeId === (int)$storeThemeId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
