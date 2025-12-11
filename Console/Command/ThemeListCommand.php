@@ -6,12 +6,12 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\View\DesignInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Theme\Model\ResourceModel\Theme as ThemeResourceModel;
 use Magento\Theme\Model\ResourceModel\Theme\Collection as ThemeCollection;
 use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory as ThemeCollectionFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -33,6 +33,7 @@ class ThemeListCommand extends Command
     {
         $this->setName('theme:list');
         $this->setDescription('Show all available themes');
+        $this->addOption('json', null, InputOption::VALUE_OPTIONAL, 'Output as JSON');
         parent::configure();
     }
 
@@ -47,12 +48,16 @@ class ThemeListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $json = $input->getOption('json');
+        if ((bool)$json) {
+            echo $this->getJson();
+            return Command::SUCCESS;
+        }
+
         $table = new Table($output);
         $table->setHeaders(['ID', 'Theme', 'Path', 'Area', 'Active']);
 
-        /** @var ThemeCollection $themeCollection */
-        $themeCollection = $this->themeCollectionFactory->create();
-        foreach ($themeCollection as $theme) {
+        foreach ($this->getThemes() as $theme) {
             $table->addRow([
                 $theme->getId(),
                 $theme->getThemeTitle(),
@@ -65,6 +70,27 @@ class ThemeListCommand extends Command
         $table->render();
 
         return Command::SUCCESS;
+    }
+
+    private function getJson(): string
+    {
+        $themes = [];
+        foreach ($this->getThemes() as $theme) {
+            $themes[] = [
+                'id' => $theme->getId(),
+                'name' => $theme->getThemeTitle(),
+                'path' => $theme->getThemePath(),
+                'area' => $theme->getArea(),
+                'active' => $this->isActive((int)$theme->getId())
+            ];
+        }
+
+        return json_encode($themes, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+    private function getThemes(): ThemeCollection
+    {
+        return $this->themeCollectionFactory->create();
     }
 
     private function isActive(int $themeId): bool
