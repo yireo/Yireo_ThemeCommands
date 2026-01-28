@@ -50,18 +50,57 @@ class ThemeListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $themeType = trim((string)$input->getOption('type'));
+        $selectedThemeType = trim((string)$input->getOption('type'));
+        $themes = $this->getThemes()->getItems();
+        if ($selectedThemeType) {
+            $themes = array_filter($themes, fn(Theme $theme) => $this->getThemeType($theme) === $selectedThemeType);
+        }
 
         $json = $input->getOption('json');
         if ((bool)$json) {
-            echo $this->getJson($themeType);
+            $this->renderJson($output, $themes);
             return Command::SUCCESS;
         }
 
-        $table = new Table($output);
-        $table->setHeaders(['ID', 'Theme', 'Path', 'Area',  'Parent ID', 'Type', 'Active']);
 
-        foreach ($this->getThemes() as $theme) {
+        $this->renderTable($output, $themes);
+
+        return Command::SUCCESS;
+    }
+
+    private function renderJson(OutputInterface $output, array $themes): void
+    {
+        $themeData = [];
+        foreach ($themes as $theme) {
+            $themeData[] = [
+                'id' => $theme->getId(),
+                'name' => $theme->getThemeTitle(),
+                'path' => $theme->getThemePath(),
+                'area' => $theme->getArea(),
+                'type' => $this->getThemeType($theme),
+                'parentId' => $theme->getParentId(),
+                'active' => $this->isActive((int)$theme->getId())
+            ];
+        }
+
+        $json = (string)json_encode($themeData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $output->writeln($json);
+    }
+
+    private function renderTable(OutputInterface $output, array $themes): void
+    {
+        $table = new Table($output);
+        $table->setHeaders([
+            'ID',
+            'Theme',
+            'Path',
+            'Area',
+            'Parent ID',
+            'Type',
+            'Active'
+        ]);
+
+        foreach ($themes as $theme) {
             $table->addRow([
                 $theme->getId(),
                 $theme->getThemeTitle(),
@@ -74,26 +113,6 @@ class ThemeListCommand extends Command
         }
 
         $table->render();
-
-        return Command::SUCCESS;
-    }
-
-    private function getJson(string $themeType): string
-    {
-        $themes = [];
-        foreach ($this->getThemes() as $theme) {
-            $themes[] = [
-                'id' => $theme->getId(),
-                'name' => $theme->getThemeTitle(),
-                'path' => $theme->getThemePath(),
-                'area' => $theme->getArea(),
-                'type' => $this->getThemeType($theme),
-                'parentId' => $theme->getParentId(),
-                'active' => $this->isActive((int)$theme->getId())
-            ];
-        }
-
-        return json_encode($themes, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     private function getThemes(): ThemeCollection
