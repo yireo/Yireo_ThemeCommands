@@ -8,6 +8,7 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Theme\Model\ResourceModel\Theme\Collection as ThemeCollection;
 use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory as ThemeCollectionFactory;
+use Magento\Theme\Model\Theme;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,6 +35,7 @@ class ThemeListCommand extends Command
         $this->setName('theme:list');
         $this->setDescription('Show all available themes');
         $this->addOption('json', null, InputOption::VALUE_OPTIONAL, 'Output as JSON');
+        $this->addOption('type', null, InputOption::VALUE_OPTIONAL, 'Theme type (hyva, luma)');
         parent::configure();
     }
 
@@ -48,14 +50,16 @@ class ThemeListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $themeType = trim((string)$input->getOption('type'));
+
         $json = $input->getOption('json');
         if ((bool)$json) {
-            echo $this->getJson();
+            echo $this->getJson($themeType);
             return Command::SUCCESS;
         }
 
         $table = new Table($output);
-        $table->setHeaders(['ID', 'Theme', 'Path', 'Area', 'Active']);
+        $table->setHeaders(['ID', 'Theme', 'Path', 'Area',  'Parent ID', 'Type', 'Active']);
 
         foreach ($this->getThemes() as $theme) {
             $table->addRow([
@@ -63,6 +67,8 @@ class ThemeListCommand extends Command
                 $theme->getThemeTitle(),
                 $theme->getThemePath(),
                 $theme->getArea(),
+                $theme->getParentId(),
+                $this->getThemeType($theme),
                 $this->isActive((int)$theme->getId()) ? 'Yes' : 'No'
             ]);
         }
@@ -72,7 +78,7 @@ class ThemeListCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function getJson(): string
+    private function getJson(string $themeType): string
     {
         $themes = [];
         foreach ($this->getThemes() as $theme) {
@@ -81,6 +87,8 @@ class ThemeListCommand extends Command
                 'name' => $theme->getThemeTitle(),
                 'path' => $theme->getThemePath(),
                 'area' => $theme->getArea(),
+                'type' => $this->getThemeType($theme),
+                'parentId' => $theme->getParentId(),
                 'active' => $this->isActive((int)$theme->getId())
             ];
         }
@@ -108,5 +116,22 @@ class ThemeListCommand extends Command
         }
 
         return false;
+    }
+
+    private function getThemeType(Theme $theme): string
+    {
+        if (str_starts_with((string) $theme->getThemePath(), 'Hyva/')) {
+            return 'hyva';
+        }
+
+        if (str_starts_with((string) $theme->getThemePath(), 'Magento/')) {
+            return 'luma';
+        }
+
+        if ($theme->getParentTheme()) {
+            return $this->getThemeType($theme->getParentTheme());
+        }
+
+        return 'unknown';
     }
 }
