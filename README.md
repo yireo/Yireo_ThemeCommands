@@ -31,9 +31,24 @@ Note that the `theme:change` command also includes a flag `--reset` (valid only 
 bin/magento theme:change --reset -- Magento/luma
 ```
 
+When you reset to a custom theme, and recepeive an error like:
+```bash
+bin/magento theme:change --reset <vendor/<theme>                                
+                                                 
+  Not enough arguments (missing: "theme_name").  
+                                                 
+theme:change [--reset [RESET]] [--] <theme_name> [<scope> [<scope_id>]]
+```
+
+you'll need to use the following command; 
+```bash
+bin/magento theme:change --reset Magento/luma <vendor/<theme>
+```
+
+
 Change the current theme to `Hyva/default` for the StoreView with ID 1:
 ```bash
-bin/magento theme:change Hyva/default 1 stores
+bin/magento theme:change Hyva/default stores 1
 ```
 
 Create a new theme:
