@@ -93,12 +93,12 @@ class ThemeDesignConfigCommand extends Command
             }
 
             $table->addRow([
-                $websiteId,
                 $websiteName,
-                $storeId,
+                $websiteId,
                 $storeName,
-                $themeId,
+                $storeId,
                 $themeName,
+                $themeId,
                 $override
             ]);
         }
