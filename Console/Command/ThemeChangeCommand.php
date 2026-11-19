@@ -124,8 +124,8 @@ class ThemeChangeCommand extends Command
             return Command::FAILURE;
         }
 
-        if (!in_array($scope, ['default', 'website', 'stores'])) {
-            $output->writeln('<error>Not a valid scope. Can only be: default, website, stores</error>');
+        if (!in_array($scope, ['default', 'websites', 'stores'])) {
+            $output->writeln('<error>Not a valid scope. Can only be: default, websites, stores</error>');
 
             return Command::FAILURE;
         }
