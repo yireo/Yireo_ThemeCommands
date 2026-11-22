@@ -116,9 +116,12 @@ class ThemeDesignConfigCommand extends Command
 
         $connection = $this->resourceConnection->getConnection();
         $table = $this->resourceConnection->getTableName('core_config_data');
-        $query = 'SELECT `value` FROM `'.$table.'`';
-        $query .= ' WHERE `path` = "design/theme/theme_id" AND `scope` = "'.$scope.'" AND `scope_id` = "'.$scopeId.'"';
-        $col = $connection->fetchCol($query);
+        $select = $connection->select()
+            ->from($table, ['value'])
+            ->where('path = ?', 'design/theme/theme_id')
+            ->where('scope = ?', $scope)
+            ->where('scope_id = ?', $scopeId);
+        $col = $connection->fetchCol($select);
 
         if (empty($col)) {
             return false;

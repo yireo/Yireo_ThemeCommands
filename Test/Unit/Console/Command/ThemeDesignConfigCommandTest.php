@@ -6,6 +6,7 @@ use ArrayIterator;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DataObject;
 use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\DB\Select;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreRepository;
 use Magento\Store\Model\Website;
@@ -52,8 +53,18 @@ class ThemeDesignConfigCommandTest extends TestCase
         $themeProvider = $this->createMock(ThemeProvider::class);
         $themeProvider->method('getThemeById')->with(9)->willReturn($theme);
 
+        $select = $this->createMock(Select::class);
+        $select->method('from')->willReturnSelf();
+        $whereConditions = [];
+        $select->method('where')->willReturnCallback(
+            function (string $condition, mixed $value) use ($select, &$whereConditions) {
+                $whereConditions[] = [$condition, $value];
+                return $select;
+            }
+        );
         $connection = $this->createMock(AdapterInterface::class);
-        $connection->method('fetchCol')->willReturn(['9']);
+        $connection->method('select')->willReturn($select);
+        $connection->method('fetchCol')->with($select)->willReturn(['9']);
         $resourceConnection = $this->createMock(ResourceConnection::class);
         $resourceConnection->method('getConnection')->willReturn($connection);
         $resourceConnection->method('getTableName')->willReturn('core_config_data');
@@ -70,6 +81,14 @@ class ThemeDesignConfigCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame([
+            ['path = ?', 'design/theme/theme_id'],
+            ['scope = ?', 'websites'],
+            ['scope_id = ?', 7],
+            ['path = ?', 'design/theme/theme_id'],
+            ['scope = ?', 'stores'],
+            ['scope_id = ?', 8],
+        ], $whereConditions);
         $display = $tester->getDisplay();
         $this->assertMatchesRegularExpression(
             '/\|\s*Website\s*\|\s*Website ID\s*\|\s*Store View\s*\|\s*Store View ID\s*\|\s*Theme\s*\|\s*Theme ID\s*\|\s*Override\s*\|/',

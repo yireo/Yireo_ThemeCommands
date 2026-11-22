@@ -5,6 +5,7 @@ namespace Yireo\ThemeCommands\Test\Unit\Console\Command;
 use Magento\Framework\App\Cache\Manager as CacheManager;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Indexer\Model\Indexer;
 use Magento\Indexer\Model\IndexerFactory;
 use Magento\Store\Model\ResourceModel\Store as StoreResourceModel;
@@ -25,6 +26,7 @@ use Yireo\ThemeCommands\Console\Command\ThemeChangeCommand;
 class ThemeChangeCommandTest extends TestCase
 {
     private ConfigInterface&MockObject $config;
+    private ResourceConnection&MockObject $resourceConnection;
     private ?int $themeId = 3;
     private ?int $websiteId = 2;
     private ?int $storeId = 5;
@@ -102,6 +104,30 @@ class ThemeChangeCommandTest extends TestCase
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
     }
 
+    public function testResetDeletesThemeConfigOfOtherScopes(): void
+    {
+        $connection = $this->createMock(AdapterInterface::class);
+        $connection->expects($this->once())
+            ->method('delete')
+            ->with('core_config_data', [
+                'path = ?' => 'design/theme/theme_id',
+                'scope != ?' => 'default',
+            ]);
+        $this->resourceConnection->method('getConnection')->willReturn($connection);
+        $this->resourceConnection->method('getTableName')->willReturn('core_config_data');
+
+        $tester = $this->execute(['--reset' => null]);
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+    }
+
+    public function testWithoutResetNothingIsDeleted(): void
+    {
+        $this->resourceConnection->expects($this->never())->method('getConnection');
+
+        $tester = $this->execute([]);
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+    }
+
     public function testUnknownThemeIsRejected(): void
     {
         $this->themeId = null;
@@ -115,6 +141,7 @@ class ThemeChangeCommandTest extends TestCase
     protected function setUp(): void
     {
         $this->config = $this->createMock(ConfigInterface::class);
+        $this->resourceConnection = $this->createMock(ResourceConnection::class);
     }
 
     private function execute(array $arguments): CommandTester
@@ -147,7 +174,7 @@ class ThemeChangeCommandTest extends TestCase
             $websiteFactory,
             $this->createMock(StoreResourceModel::class),
             $storeFactory,
-            $this->createMock(ResourceConnection::class)
+            $this->resourceConnection
         );
 
         $tester = new CommandTester($command);

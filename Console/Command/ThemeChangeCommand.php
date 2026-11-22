@@ -136,9 +136,10 @@ class ThemeChangeCommand extends Command
         if ($scope === 'default' && $reset === true) {
             $connection = $this->resourceConnection->getConnection();
             $table = $this->resourceConnection->getTableName('core_config_data');
-            $query = 'DELETE FROM `'.$table.'`';
-            $query .= ' WHERE `path` = "design/theme/theme_id" AND `scope` != "default"';
-            $connection->query($query);
+            $connection->delete($table, [
+                'path = ?' => 'design/theme/theme_id',
+                'scope != ?' => 'default',
+            ]);
         }
 
         $this->cacheManager->clean(['config', 'layout', 'block_html']);
