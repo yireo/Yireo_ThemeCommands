@@ -1,5 +1,9 @@
 {
-    "sequence": [],
+    "sequence": [
+        "Magento_Indexer",
+        "Magento_Store",
+        "Magento_Theme"
+    ],
     "modules": [],
     "components": [],
     "config": [],
