@@ -10,5 +10,6 @@
     "tests": [],
     "module_name": "Yireo_ThemeCommands",
     "composer_name": "yireo/magento2-theme-commands",
-    "phpstan_level": "1"
+    "phpstan_level": "3",
+    "phpcs_severity": "9"
 }
