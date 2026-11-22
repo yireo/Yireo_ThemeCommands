@@ -50,9 +50,9 @@ class ThemeCreateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $themeName = trim((string)$input->getOption('theme'));
-        $parentThemeName = trim((string)$input->getOption('parent'));
-        $application = trim((string)$input->getOption('application'));
+        $themeName = trim((string)$input->getOption('theme'), " \f\n\r\t\v\x00");
+        $parentThemeName = trim((string)$input->getOption('parent'), " \f\n\r\t\v\x00");
+        $application = trim((string)$input->getOption('application'), " \f\n\r\t\v\x00");
 
         if (empty($application)) {
             $application = 'frontend';
@@ -90,7 +90,8 @@ class ThemeCreateCommand extends Command
 
     /**
      * @param string $themeFolder
-     * @param string $componentName
+     * @param string $themeName
+     * @param string $parentThemeName
      * @return void
      */
     private function generateThemeXmlFile(string $themeFolder, string $themeName, string $parentThemeName)

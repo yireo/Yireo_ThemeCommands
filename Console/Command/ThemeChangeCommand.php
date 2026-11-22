@@ -85,7 +85,7 @@ class ThemeChangeCommand extends Command
     {
         $reset = $input->getOption('reset') !== false;
 
-        $themeName = trim($input->getArgument('theme_name'));
+        $themeName = trim((string)$input->getArgument('theme_name'), " \f\n\r\t\v\x00");
         $themeId = $this->getThemeId($themeName);
 
         if (is_null($themeId)) {

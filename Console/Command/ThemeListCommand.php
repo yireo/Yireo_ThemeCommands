@@ -50,7 +50,7 @@ class ThemeListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $selectedThemeType = trim((string)$input->getOption('type'));
+        $selectedThemeType = trim((string)$input->getOption('type'), " \f\n\r\t\v\x00");
         $themes = $this->getThemes()->getItems();
         if ($selectedThemeType) {
             $themes = array_filter($themes, fn(Theme $theme) => $this->getThemeType($theme) === $selectedThemeType);
