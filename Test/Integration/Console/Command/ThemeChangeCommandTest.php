@@ -60,6 +60,39 @@ class ThemeChangeCommandTest extends TestCase
         $this->assertSame([], $this->getSavedThemeIds('website', $this->websiteId));
     }
 
+    public function testThemeChangeRejectsAdminhtmlTheme(): void
+    {
+        $tester = new CommandTester(Bootstrap::getObjectManager()->create(ThemeChangeCommand::class));
+        $tester->execute(['theme_name' => 'Magento/backend', 'scope' => 'websites', 'scope_id' => (string)$this->websiteId]);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertStringContainsString('Not a valid theme', $tester->getDisplay());
+        $this->assertSame([], $this->getSavedThemeIds('websites', $this->websiteId));
+    }
+
+    public function testThemeChangeRejectsUnknownWebsiteId(): void
+    {
+        $tester = $this->executeThemeChange('99999');
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertStringContainsString('Not a valid scope_id', $tester->getDisplay());
+        $this->assertSame([], $this->getSavedThemeIds('websites', 99999));
+    }
+
+    public function testThemeChangeRejectsResetForWebsitesScope(): void
+    {
+        $tester = new CommandTester(Bootstrap::getObjectManager()->create(ThemeChangeCommand::class));
+        $tester->execute([
+            'theme_name' => 'Magento/luma',
+            'scope' => 'websites',
+            'scope_id' => (string)$this->websiteId,
+            '--reset' => true,
+        ]);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertSame([], $this->getSavedThemeIds('websites', $this->websiteId));
+    }
+
     public function testDesignConfigShowsNameBeforeId(): void
     {
         $website = Bootstrap::getObjectManager()->get(StoreManagerInterface::class)->getWebsite($this->websiteId);
