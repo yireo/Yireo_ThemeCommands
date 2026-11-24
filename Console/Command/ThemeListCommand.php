@@ -15,9 +15,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use Yireo\ThemeCommands\Console\OutputSanitizer;
 
 class ThemeListCommand extends Command
 {
+    private const MAX_PARENT_DEPTH = 10;
+
     public function __construct(
         private readonly ThemeCollectionFactory $themeCollectionFactory,
         private readonly ScopeConfigInterface $scopeConfig,
@@ -102,11 +105,11 @@ class ThemeListCommand extends Command
 
         foreach ($themes as $theme) {
             $table->addRow([
-                $theme->getId(),
-                $theme->getThemeTitle(),
-                $theme->getThemePath(),
-                $theme->getArea(),
-                $theme->getParentId(),
+                OutputSanitizer::sanitize($theme->getId()),
+                OutputSanitizer::sanitize($theme->getThemeTitle()),
+                OutputSanitizer::sanitize($theme->getThemePath()),
+                OutputSanitizer::sanitize($theme->getArea()),
+                OutputSanitizer::sanitize($theme->getParentId()),
                 $this->getThemeType($theme),
                 $this->isActive((int)$theme->getId()) ? 'Yes' : 'No'
             ]);
@@ -139,16 +142,24 @@ class ThemeListCommand extends Command
 
     private function getThemeType(Theme $theme): string
     {
-        if (str_starts_with((string) $theme->getThemePath(), 'Hyva/')) {
-            return 'hyva';
-        }
+        $visitedThemeIds = [];
+        for ($depth = 0; $depth < self::MAX_PARENT_DEPTH; $depth++) {
+            $themePath = (string)$theme->getThemePath();
+            if (str_starts_with($themePath, 'Hyva/')) {
+                return 'hyva';
+            }
 
-        if (str_starts_with((string) $theme->getThemePath(), 'Magento/')) {
-            return 'luma';
-        }
+            if (str_starts_with($themePath, 'Magento/')) {
+                return 'luma';
+            }
 
-        if ($theme->getParentTheme()) {
-            return $this->getThemeType($theme->getParentTheme());
+            $visitedThemeIds[] = (int)$theme->getId();
+            $parentTheme = $theme->getParentTheme();
+            if (!$parentTheme instanceof Theme || in_array((int)$parentTheme->getId(), $visitedThemeIds, true)) {
+                return 'unknown';
+            }
+
+            $theme = $parentTheme;
         }
 
         return 'unknown';
