@@ -34,25 +34,11 @@ Change the current theme to `Magento/luma` for all scopes:
 bin/magento theme:change Magento/luma
 ```
 
-Note that the `theme:change` command also includes a flag `--reset` (valid only without additional parameters) which resets all stores to the default, so that only 1 theme is active:
+Note that the `theme:change` command also includes a flag `--reset` (valid only for the default scope) which removes the theme setting of all websites and store views, so that only 1 theme is active. You are asked for confirmation, unless you add `--no-interaction`:
 ```bash
-bin/magento theme:change --reset -- Magento/luma
+bin/magento theme:change --reset Magento/luma
+bin/magento theme:change --reset --no-interaction Vendor/theme
 ```
-
-When you reset to a custom theme, and recepeive an error like:
-```bash
-bin/magento theme:change --reset <vendor/<theme>                                
-                                                 
-  Not enough arguments (missing: "theme_name").  
-                                                 
-theme:change [--reset [RESET]] [--] <theme_name> [<scope> [<scope_id>]]
-```
-
-you'll need to use the following command; 
-```bash
-bin/magento theme:change --reset Magento/luma <vendor/<theme>
-```
-
 
 Change the current theme to `Hyva/default` for the StoreView with ID 1:
 ```bash
@@ -64,6 +50,8 @@ Create a new theme:
 bin/magento theme:create --theme Yireo/example --parent Magento/luma --application frontend
 bin/magento theme:change Yireo/example
 ```
+
+The theme name needs to be formatted like `Vendor/theme_name` (a vendor name starting with an uppercase letter, a theme name in lowercase letters, digits, `-` and `_`). The `--application` can only be `frontend` (default) or `adminhtml`. The parent theme needs to exist already. Existing theme files are not overwritten, unless you add `--force`.
 
 ## Caveats
 When a new theme has been created, it might have not been *discovered* by Magento. For instance, the output of the `theme:list` command is not showing this new theme. Run `bin/magento setup:upgrade` first.
