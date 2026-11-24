@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use Yireo\ThemeCommands\Console\OutputSanitizer;
 
 class ThemePathCommand extends Command
 {
@@ -45,7 +46,7 @@ class ThemePathCommand extends Command
     {
         $theme = 'frontend/'.$input->getArgument('theme');
         $path = (string)$this->componentRegistrar->getPath(ComponentRegistrar::THEME, $theme);
-        $output->writeln($path);
+        $output->writeln(OutputSanitizer::sanitize($path));
 
         return Command::SUCCESS;
     }

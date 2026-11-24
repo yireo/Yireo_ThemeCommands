@@ -12,6 +12,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use Yireo\ThemeCommands\Console\OutputSanitizer;
 
 class ThemeDesignConfigCommand extends Command
 {
@@ -92,7 +93,7 @@ class ThemeDesignConfigCommand extends Command
                 $override = $this->isCustomized('stores', $storeId, $themeId) ? 'x' : '';
             }
 
-            $table->addRow([
+            $table->addRow(array_map([OutputSanitizer::class, 'sanitize'], [
                 $websiteName,
                 $websiteId,
                 $storeName,
@@ -100,7 +101,7 @@ class ThemeDesignConfigCommand extends Command
                 $themeName,
                 $themeId,
                 $override
-            ]);
+            ]));
         }
 
         $table->render();
