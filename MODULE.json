@@ -4,12 +4,29 @@
         "Magento_Store",
         "Magento_Theme"
     ],
-    "modules": [],
+    "modules": [
+        "Magento_AdminNotification",
+        "Magento_Csp",
+        "Magento_Directory",
+        "Magento_Indexer",
+        "Magento_Store",
+        "Magento_Theme"
+    ],
     "components": [],
     "config": [],
-    "tests": [],
+    "tests": {
+        "unit": 37,
+        "integration": 13,
+        "functional": 0
+    },
     "module_name": "Yireo_ThemeCommands",
     "composer_name": "yireo/magento2-theme-commands",
     "phpstan_level": "4",
-    "phpcs_severity": "9"
+    "phpcs_severity": "9",
+    "php_versions": [
+        "8.1",
+        "8.2"
+    ],
+    "skip_magento_versions": [],
+    "skip_css_utils": false
 }
