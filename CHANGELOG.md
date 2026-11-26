@@ -5,9 +5,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.0] - 26 November 2026
+### Added
+- `theme:list` shows whether a theme is active in a store, plus its type and parent ID
+- `theme:list` option `--json` to output the list as JSON
+- `theme:list` option `--type` to filter on Hyvä or Luma themes
+- Support for PHP 8.5
+
+### Changed
+- BREAKING: `theme:create` only accepts theme names like `Vendor/theme_name`, `--application` must be `frontend` or `adminhtml` and the parent theme must exist
+- BREAKING: `theme:create` no longer overwrites existing theme files unless `--force` is given
+- BREAKING: `theme:change --reset` is now a flag without value, only works for the default scope, asks for confirmation and runs in a transaction
+- `theme:change` only assigns frontend themes and rejects scope IDs of websites or store views that do not exist
+
+### Removed
+- Support for PHP 8.1
+
 ### Fixed
-- Accept scope `websites` in `theme:change` instead of rejecting it as invalid
-- Print name and ID in the matching columns of `theme:design_config`
+- Shell command injection and path traversal in `theme:create` via the theme name, `--application` or the custom skeleton folder
+- Console output could be spoofed or hidden by formatter tags and terminal escape sequences in values from the database, theme.xml files or input
+- `theme:list` looping endlessly on themes with cyclic parent themes
+- Scope `websites` always rejected by `theme:change`
+- Name and ID printed in swapped columns by `theme:design_config`
+- Raw SQL with unescaped scope values in `theme:change` and `theme:design_config`
+- Missing module dependencies on Magento_Indexer, Magento_Store and Magento_Theme
+- PHP 8.6 deprecation of `trim()` without explicit characters
 
 ## [1.3.4] - 22 October 2025
 ### Fixed
